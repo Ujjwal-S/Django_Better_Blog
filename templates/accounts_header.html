@@ -1,0 +1,118 @@
+{% load static %}
+
+<header class="header-global">
+  <nav
+    id="navbar-main"
+    aria-label="Primary navigation"
+    class="
+      navbar navbar-main navbar-expand-lg navbar-theme-primary
+      headroom
+      navbar-light navbar-transparent navbar-theme-secondary
+      headroom--not-bottom headroom--pinned headroom--top
+    "
+  >
+        <div class="container position-relative">
+            <a class="navbar-brand me-lg-5" href="/">
+                <img class="navbar-brand-dark" src="{% static 'img/brand/light.svg' %}" alt="Logo light">
+                <img class="navbar-brand-light" src="{% static 'img/brand/dark.svg' %}" alt="Logo dark">
+            </a>
+            <div class="navbar-collapse collapse me-auto" id="navbar_global">
+                <div class="navbar-collapse-header">
+                    <div class="row">
+                        <div class="col-6 collapse-brand">
+                            <a href="/">
+                                <img src="{% static 'img/brand/dark.svg' %}" alt="Themesberg logo">
+                            </a>
+                        </div>
+                        <div class="col-6 collapse-close">
+                            <a href="#" class="fas fa-times" onclick="return f()"></a>
+                        </div>
+                    </div>
+                </div>
+                <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
+                  
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a href="{% url 'blog-list' %}" class="nav-link" id="frontPagesDropdown" aria-expanded="false">
+                                Blogs
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="nav-link" id="frontPagesDropdown" aria-expanded="false">
+                                Login
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <a href="{% url 'bookmarks' %}" class="nav-link" id="frontPagesDropdown" aria-expanded="false">
+                                Bookmarks
+                            </a>
+                         </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'signup' %}" class="nav-link" id="frontPagesDropdown" aria-expanded="false">
+                                Create Account
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="supportDropdown" aria-expanded="false">
+                                Dashboard
+                                <span class="fas fa-angle-down nav-link-arrow ms-1"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg" aria-labelledby="supportDropdown">
+                                <div class="col-auto px-0">
+                                    <div class="list-group list-group-flush">
+                                        <a href="{% url 'my-blogs' %}" class="list-group-item list-group-item-action d-flex align-items-center p-0 py-3 px-lg-4">
+                                            <span class="icon icon-sm"><span class="fas fa-file-alt"></span></span>
+                                            <div class="ms-4">
+                                                <span class="d-block font-small fw-bold mb-0">My Blogs<span class="badge badge-sm badge-secondary ms-2">v3.1</span></span>
+                                            </div>
+                                        </a>
+                                        <a href="{% url 'settings' %}" class="list-group-item list-group-item-action d-flex align-items-center p-0 py-3 px-lg-4">
+                                            <span class="icon icon-sm"><span class="fas fa-microphone-alt"></span></span>
+                                            <div class="ms-4">
+                                                <span class="d-block font-small fw-bold mb-0">Settings</span>
+                                            </div>
+                                        </a>
+                                        <a href="{% url 'security' %}" class="list-group-item list-group-item-action d-flex align-items-center p-0 py-3 px-lg-4">
+                                            <span class="icon icon-sm"><span class="fas fa-microphone-alt"></span></span>
+                                            <div class="ms-4">
+                                                <span class="d-block font-small fw-bold mb-0">Security</span>
+                                            </div>
+                                        </a>
+                                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action d-flex align-items-center p-0 py-3 px-lg-4">
+                                            <span class="icon icon-sm"><span class="fas fa-microphone-alt"></span></span>
+                                            <div class="ms-4">
+                                                <span class="d-block font-small fw-bold mb-0">Logout</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+            <div class="d-flex align-items-center">
+                <a href="https://github.com/AshishPandagre/better-blog" target="_blank" class="btn btn-outline-gray-100 d-none d-lg-inline me-md-3"><span class="fas fa-book me-2"></span> Docs</a>
+                <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbar_global" aria-controls="navbar_global" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+  </nav>
+</header>
+
+<script type="text/javascript">
+    async function f(){
+        console.log('closing navbar')
+        await document.getElementById('navbar_global').classList.toggle('show')
+    }
+</script>

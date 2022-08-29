@@ -1,0 +1,126 @@
+{% extends 'accounts_base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="col-12 col-lg-8">
+  <div class="row justify-content-center">
+
+    {% for blog in bookmarks %}
+    <div class="col-12 col-md-6 col-lg-12">
+      <div class="card border-gray-300 mb-4">
+        <div class="row g-0 align-items-center">
+          <div class="col-12 col-lg-6 col-xl-4">
+            <a href="{% url 'blog-detail' blog.blog.slug %}"
+              ><img
+                src="{{ blog.blog.img.url }}"
+                alt="{{ blog.blog.title }}"
+                class="card-img p-2 rounded-xl"
+            /></a>
+          </div>
+          <div class="col-12 col-lg-6 col-xl-8">
+            <div class="card-body py-lg-0">
+              <div class="d-flex g-0 align-items-center mb-2">
+                <div class="col text-right">
+                  <div class="btn-group">
+                    <button
+                      class="
+                        btn btn-link
+                        text-dark
+                        dropdown-toggle dropdown-toggle-split
+                        m-0
+                        p-0
+                      "
+                      data-bs-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      <span class="icon icon-sm"
+                        ><span
+                          class="fas fa-ellipsis-h icon-secondary"
+                        ></span> </span
+                      ><span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu py-0">
+                      <a
+                        class="dropdown-item text-danger rounded-bottom"
+                        href="#"
+                        ><span
+                          class="fa fa-trash me-2"
+                          aria-hidden="true"
+                        ></span
+                        >Delete</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a href="{% url 'blog-detail' blog.blog.slug %}"
+                ><h2 class="h5">
+                  {{ blog.blog.title }}
+                </h2></a
+              >
+              <div class="col d-flex ps-0">
+                <span class="text-muted font-small me-3"
+                  ><span class="fas fa-eye me-2"></span>{{ blog.blog.n_views }}</span
+                >
+                <span class="text-muted font-small me-3"
+                  ><span class="far fa-heart me-2"></span>{{ blog.blog.n_likes }}</span
+                >
+                <a class="font-small text-dark" href="./messages.html"
+                  ><span class="fas fa-envelope me-2"></span>{{ blog.blog.n_comments }}</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    No Bookmarks yet.
+    {% endfor %}
+
+  </div>
+
+  {% if bookmarks %}
+  <div class="row">
+    <div class="col">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center mt-4 mt-lg-5">
+
+                                        <br>
+
+                                        {% if page_obj.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{page_obj.previous_page_number}}">Previous</a>
+                                            </li>
+
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{page_obj.previous_page_number}}">{{page_obj.previous_page_number}}</a>
+                                            </li>
+                                        {% endif %}
+
+                                        <li class="page-item active">
+                                            <a class="page-link" href="#">{{page_obj.number}}</a>
+                                        </li>
+
+                                        {% if page_obj.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{page_obj.next_page_number}}">{{page_obj.next_page_number}}</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+  {% endif %}
+  
+</div>
+
+{% endblock %}
+

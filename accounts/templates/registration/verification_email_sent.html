@@ -1,0 +1,25 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+
+<main>
+  <section class="min-vh-100 d-flex align-items-center section-image overlay-soft-dark" data-background="{% static 'img/pages/form-image.jpg' %}">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+          <div class="signin-inner my-4 my-lg-0 bg-white shadow-soft border rounded border-gray-300 p-4 p-lg-5 w-100 fmxw-500">
+            <div class="d-flex justify-content-center align-items-center mt-4">
+              <span class="fw-normal">
+                Verification email has been sent to your email address.	
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% endblock %}

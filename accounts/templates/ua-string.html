@@ -1,0 +1,9 @@
+<form action="" method="POST">
+	{% csrf_token %}
+	<input type="text" id="user-agent" name="user-agent">
+	<button type="submit">Submit</button>
+</form>
+
+<script type="text/javascript">
+	document.getElementById('user-agent').value = navigator.userAgent;
+</script>

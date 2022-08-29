@@ -1,0 +1,6 @@
+*.pyc    
+__pycache__  
+env
+media
+*.sqlite3
+/secrets.json

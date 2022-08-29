@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load blog_tags %}
+
+
+{% block main %}
+
+{% include 'header.html' %}
+
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div class="toast bg-primary text-white fade show hide" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
+	<div class="toast-header">
+	  <span class="fab fa-bootstrap me-2"></span>
+	  <strong class="me-auto">BetterBlog</strong>
+	  <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+	</div>
+	<div class="toast-body" id="toast-body"></div>
+  </div>
+</div>
+
+				{% if form.errors %}
+					{% for field in form %}
+						{% for error in field.errors %}
+								<div class="alert alert-danger" role="alert">
+								<strong>{{ field.name | title }} - {{ error|escape }}</strong>
+							</div>
+						{% endfor %}
+					{% endfor %}
+					{% for error in form.non_field_errors %}
+								<div class="alert alert-danger" role="alert">
+							<strong>{{ error|escape }}</strong>
+						</div>
+					{% endfor %}				
+				{% endif %}
+
+		<main>
+			<section class="section-header pb-5 pb-sm-7 bg-primary text-white">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-12 col-lg-10 text-center">
+							<div class="mb-4">
+								{% for tag in blog.tags.all %}
+									<a href="#" class="badge bg-{% cycle 'info' 'success' 'danger' 'warning text-dark' 'light text-dark' %} text-uppercase me-2 px-3">{{tag.name}}</a>
+								{% endfor %}
+							</div>
+							<h1 class="display-3 mb-4 px-lg-5">{{ blog.title }}</h1>
+							<div class="post-meta">
+								<span class="fw-bold me-3">
+									{{ blog.author.username }}
+								</span>
+								<!-- <span class="post-date me-3">January 31, 2021</span> -->
+								<span class="post-date me-3">{{ blog.date_updated|date:"d M Y" }}</span>
+								<span class="fw-bold">{{ blog.read_time }} min read</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="section section-sm bg-white pt-5 pt-lg-6 text-black">
+				<article class="container">
+					<div class="row justify-content-center">
+						<div class="col-12 col-lg-8">
+							{% autoescape off %}
+							{{ blog.content }}
+							{% endautoescape %}
+						</div>
+					</div>
+					<div class="row justify-content-sm-center align-items-center py-3 mt-3">
+						<div class="col-12 col-lg-8">
+							<div class="row">
+								<div class="col-9 col-md-6">
+									<h6 class="fw-bolder d-inline mb-0 me-3">Share:</h6>
+									<button class="btn btn-sm me-2 btn-icon-only btn-pill btn-twitter d-inline text-white" aria-label="twitter social link">
+										<span class="fab fa-twitter"></span>
+									</button>
+									<button class="btn btn-sm me-2 btn-icon-only btn-pill btn-facebook d-inline" aria-label="facebook social link">
+										<span class="fab fa-facebook-f"></span>
+									</button>
+									<button class="btn btn-sm btn-icon-only btn-pill bg-orange d-inline text-white" aria-label="reddit social link">
+										<span class="fab fa-reddit-alien"></span>
+									</button>
+								</div>
+								<div class="col-3 col-md-6 text-right" id="bookmark" onclick="addBookmark()">
+									<span class="{% if bookmarked %} fas {% else %} far {% endif %} fa-bookmark text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Bookmark Blog" data-original-title="Bookmark Blog" id="bookmark_icon"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</article>
+			</div>
+
+			
+			<div class="section section-md bg-white text-black pt-0 line-bottom-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-12 col-lg-8">
+							<div>
+								<label class="h5 mb-4" for="exampleFormControlTextarea1">
+									<span class="badge badge-md bg-primary text-uppercase me-2" id="comment-counter">{{ comments | length }}</span>
+									Comments
+								</label>
+								
+								{% if request.user.is_authenticated %}
+								<form method="POST" id="comment-form">
+									{% csrf_token %}
+									<textarea class="form-control border border-gray-300-gray" name="{{ comment_form.body.name }}" id="id_body" placeholder="Add your comment" rows="6" data-bind-characters-target="#charactersRemaining" maxlength="1000" required></textarea>
+									<input type="hidden" name="comment_id" value="None">
+									<div class="d-flex justify-content-between mt-3">
+										<small class="fw-light text-dark">
+											<span id="charactersRemaining">1000</span>
+											characters remaining
+										</small>
+										<button class="btn btn-primary animate-up-2" id="addComment">Send</button>
+									</div>
+								</form>
+								
+								{% else %}
+								<div class="section section-md bg-white text-black pt-0 line-bottom-light">
+									<div class="container">
+										<div class="h5 d-flex justify-content-center align-items-center mt-4">
+												<a class="fw-bold text-underline p-2" href="{% url 'login' %}?next={{request.path}}">Login</a> to comment
+										</div>
+									</div>
+								{% endif %}
+
+								<div class="mt-5" id="comment_list">
+
+									{% for comment in comments %}
+
+																							
+										<div class="card bg-gray-200 border-gray-300 rounded p-4 mb-4" id="{{comment.id}}">
+											<div class="d-flex justify-content-between mb-4">
+												<span class="font-small">
+													<a href="#">
+														<img class="avatar-sm img-fluid rounded-circle me-2" src="{{ comment.commenter.profile.img.url }}" alt="avatar">
+														<span class="fw-bold">{{ comment.commenter.username }}</span>
+													</a>
+													<span class="ms-2">2 min ago</span>
+												</span>
+
+												<div class="col text-right">
+													{% if request.user.is_authenticated %}
+												  <div class="btn-group">
+													<button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													  <span class="icon icon-sm">
+														<span class="fas fa-ellipsis-h icon-secondary"></span>
+													  </span>
+													  <span class="sr-only">Toggle Dropdown</span>
+													</button>
+
+													
+													
+													{% if comment.commenter == request.user %}
+														<div class="dropdown-menu py-0" style="">
+
+															<form method="POST" action="{% url 'deleteComment' comment.id %}">
+																{% csrf_token %}
+															  <input  type="submit" class="dropdown-item text-danger rounded-bottom" value="Delete">
+																<span class="fa fa-trash me-2" aria-hidden="true"></span>
+																
+															</form>
+
+														</div>
+													{% endif %}
+
+
+												  </div>
+												  {% endif %}
+												</div>
+
+											</div>
+											<p class="m-0">
+												{{ comment.body }}
+											</p>
+
+											{% if request.user.is_authenticated %}
+												<div class="mt-4 mb-3 d-flex justify-content-between">
+													<div onclick="doAction(event)">
+
+														<span class="
+														{% userLikedComment request.user comment.id %} fa-thumbs-up text-success me-3" name="like" data-bs-toggle="tooltip" data-bs-placement="top" title="Like comment" data-original-title="Like comment" data-action="LIKE"  data-commentId="{{ comment.id }}"></span>
+
+														<span class="
+														{% userDislikedComment request.user comment.id %} fa-thumbs-down text-danger me-3" name="dislike" data-bs-toggle="tooltip" data-bs-placement="top" title="Dislike comment" data-original-title="Dislike comment" data-action="DISLIKE"  data-commentId="{{ comment.id }}"></span>
+
+														<span class="font-small fw-light">{{ comment.n_likes }} like(s)</span>
+													</div>
+													<a class="fw-light font-small" data-bs-toggle="collapse" role="button" href="#replyContainer{{ comment.id }}" aria-expanded="false" aria-controls="replyContainer{{ comment.id }}">
+														<span class="fas fa-reply me-2"></span>
+														Reply
+													</a>
+												</div>
+											{% endif %}
+
+
+										<!-- reply form -->
+										<div class="collapse" id="replyContainer{{ comment.id }}" style="">
+											<label class="mb-4 d-none" for="exampleFormControlTextarea10">Replay</label>
+
+											{% if request.user.is_authenticated %}
+												<form method="POST" id="reply-form">
+												{% csrf_token %}
+												<textarea class="form-control border" id="exampleFormControlTextarea10" placeholder="Reply to John Doe" rows="6" data-bind-characters-target="#charactersRemainingReply" name="{{ comment_form.body.name }}" maxlength="1000"></textarea>
+												<input type="hidden" name="parent_id" value="{{ comment.id }}">
+												<div class="d-flex justify-content-between mt-3"><small class="fw-light"><span id="charactersRemainingReply">1000</span> characters remaining</small>
+												<button type="submit" class="btn btn-primary btn-sm animate-up-2">Send</button>
+												</div>
+												</form>
+											{% endif %}
+
+											</div>
+										</div>
+
+										{% for reply in comment.replies.all %}
+
+										<div class="card bg-gray-200 border-gray-300 rounded p-4 mb-4 ms-5">
+											<div class="d-flex justify-content-between mb-4">
+												<span class="font-small">
+													<a href="#">
+														<img class="avatar-sm img-fluid rounded-circle me-2" src="{{ comment.commenter.profile.img.url }}" alt="avatar">
+														<span class="fw-bold">{{ reply.commenter.username }}</span>
+													</a>
+													<span class="ms-2">2 min ago</span>
+												</span>
+
+												<div class="col text-right">
+													{% if request.user.is_authenticated %}
+												  <div class="btn-group">
+													<button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													  <span class="icon icon-sm">
+														<span class="fas fa-ellipsis-h icon-secondary"></span>
+													  </span>
+													  <span class="sr-only">Toggle Dropdown</span>
+													</button>
+													 </div>
+
+													{% if reply.commenter == request.user %}
+														<div class="dropdown-menu py-0" style="">
+
+															<form method="POST" action="{% url 'deleteComment' comment.id %}">
+																{% csrf_token %}
+															  <input  type="submit" class="dropdown-item text-danger rounded-bottom" value="Delete">
+																<span class="fa fa-trash me-2" aria-hidden="true"></span>
+																
+															</form>
+
+														</div>
+													{% endif %}
+
+
+												 
+												  {% endif %}
+												</div>
+
+											</div>
+											<p class="m-0">
+												{{ reply.body }}
+											</p>
+
+											{% if request.user.is_authenticated %}
+												<div class="mt-4 mb-3 d-flex justify-content-between">
+													<div onclick="doAction(event)">
+
+														<span class="
+														{% userLikedComment request.user reply.id %} fa-thumbs-up text-success me-3" name="like" data-bs-toggle="tooltip" data-bs-placement="top" title="Like comment" data-original-title="Like comment" data-action="LIKE"  data-commentId="{{ reply.id }}"></span>
+
+														<span class="
+														{% userDislikedComment request.user reply.id %} fa-thumbs-down text-danger me-3" name="dislike" data-bs-toggle="tooltip" data-bs-placement="top" title="Dislike comment" data-original-title="Dislike comment" data-action="DISLIKE"  data-commentId="{{ reply.id }}"></span>
+
+														<span class="font-small fw-light">{{ reply.n_likes }} like(s)</span>
+													</div>
+												</div>
+											{% endif %}
+
+
+										</div>
+
+										{% endfor %}
+
+										</div>
+
+									{% endfor %}
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+<script type="text/javascript">
+	BASE_URL = "{{ site.domain }}"
+	comment_counter = document.getElementById("comment-counter")
+
+	comment_form = document.getElementById('comment-form')
+	slug = "{{ blog.slug }}"
+
+
+	function showToast(msg){
+		toast = document.getElementById("toast")
+		toast.classList.remove('hide')
+		toast_msg = document.getElementById("toast-body")
+		toast_msg.innerText = msg
+	}
+
+
+	async function doAction(e){
+		console.log(e.target)
+		action = e.target.dataset.action
+		commentid = e.target.dataset.commentid
+
+		console.log(action)
+		console.log(commentid)
+		
+		const res = await fetch(BASE_URL+'/doAction/', 
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({action: action, commentId: commentid})
+		})
+		data = await res.json()
+
+		console.log(data.response)
+		likeElement = e.target.parentElement.children[0]
+		dislikeElement = e.target.parentElement.children[1]
+		nlikesElement = e.target.parentElement.children[2]
+
+		if(data.response == "OK"){
+			likeElement.className = likeElement.className.replace('fas', 'far')
+			dislikeElement.className = dislikeElement.className.replace('fas', 'far')
+
+			if(data.like==true) likeElement.className = likeElement.className.replace('far', 'fas')
+			if(data.dislike==true) dislikeElement.className = dislikeElement.className.replace('far', 'fas')
+			nlikesElement.innerText = `${data.nlikes} like(s)`
+		}
+		else{
+			showToast("Some error occured while processing the request.")
+		}
+		console.log('\n')
+	}
+
+
+	// del_btn = document.getElementById("delete-comment")
+
+	// async function deleteComment(slug, commentId){
+	// 	console.log("Delete clicked", slug, commentId)
+	
+	// 	const res = await fetch(BASE_URL+'/deleteComment/', 
+	// 	{
+	// 		method: "POST",
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({slug: slug, commentId: commentId})
+	// 	}
+	// 	)
+
+	// 	data = await res.json()
+
+	// 	if(data.response=="OK"){
+	// 		comment_counter.innerText = Number(comment_counter.innerText) - 1
+	// 		removeCommentFromPage(data.id)
+	// 	}
+	// 	else{
+	// 		showToast("Some error while deleting your comment. Try again later.")
+	// 	}
+	// }
+
+
+	// function removeCommentFromPage(id){
+	// 	ele = document.getElementById(id)
+	// 	ele.remove()
+	// }
+
+
+async function addBookmark(){
+	console.log('clicked on bookmark')
+	bookmark_icon = document.getElementById("bookmark_icon")
+
+	const res = await fetch(BASE_URL+'/toggleBookmark/', 
+	{
+		method: "POST",
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({slug: this.slug})
+	}
+	)
+
+	data = await res.json()
+	if(data.response == "OK"){
+		if(data.status) bookmark_icon.className = "fas fa-bookmark text-primary"
+		else bookmark_icon.className = "far fa-bookmark text-primary"
+	}
+	else showToast("Some error occured. Make sure you are logged in from an account.")
+}
+
+
+
+</script>
+
+{% include 'footer.html' %}
+
+{% endblock %}

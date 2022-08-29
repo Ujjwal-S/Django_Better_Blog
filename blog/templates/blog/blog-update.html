@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load blog_tags %}
+
+
+{% block main %}
+
+{% include 'header.html' %}
+
+<main>
+			<section class="section-header pb-5 pb-sm-7 bg-primary text-white">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-12 col-lg-10 text-center">
+							<h1 class="display-3 mb-4 px-lg-5">Create Blog</h1>
+						</div>
+					</div>
+				</div>
+			</section>
+
+<div class="section section-md pt-4">
+	<div class="container">
+		<div class="row mb-4 mb-lg-5">
+			
+				<div class="col-lg-12 col-sm-12">
+
+				{% if form.errors %}
+					{% for field in form %}
+						{% for error in field.errors %}
+								<div class="alert alert-danger" role="alert">
+								<strong>{{ field.name | title }} - {{ error|escape }}</strong>
+							</div>
+						{% endfor %}
+					{% endfor %}
+					{% for error in form.non_field_errors %}
+								<div class="alert alert-danger" role="alert">
+							<strong>{{ error|escape }}</strong>
+						</div>
+					{% endfor %}				
+				{% endif %}
+
+
+				<form method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<div class="mb-4">
+						<label for="id_title">Blog title</label>
+						<input class="form-control" name="{{ form.title.name }}" id="id_title" value="{{ form.title.value }}">
+					</div>
+
+					<div class="mb-4">
+						<label for="id_title">Categories</label>
+						<input class="form-control" name="test_category" value="{% for c in blog.tags.all %} {{ c }} {% endfor %}">
+						<small id="emailHelp" class="form-text text-gray">Categories seprated by a space. Max 5 categories allowed</small>
+					</div>
+
+					<div class="mb-4">
+						<label for="id_content">Content</label>
+						<textarea type="text" class="form-control" name="{{ form.content.name }}" id="id_content"> {{ form.content.value }} </textarea>
+					</div>
+
+					<div class="mb-4">
+						<label for="id_status">Status</label><br>
+						<select name="status" id="id_status" class="form-select" id="inlineFormCustomSelectPref" aria-label="Default select example">
+						  <option value="0" {% if form.status.value == 0 %} selected {% endif %}>Draft</option>
+						  <option value="1" {% if form.status.value == 1 %} selected {% endif %}>Publish</option>
+						</select>
+					</div>
+
+					<div class="mb-4">
+						<label for="id_img">Blog image</label><br>Currently: <a href="{{ blog.img.url }}" target="_blank">{{ blog.img }}</a> 
+						<input class="form-control" type="file" id="id_img" name="img">
+						<small id="emailHelp" class="form-text text-gray">It's like a display image of your blog. Choose Wisely.</small>
+					</div>
+
+				<button class="btn btn-primary" type="submit">Update</button>			
+				</form>
+			</div>
+		
+		</div>
+	</div>
+</div>
+</main>
+
+
+<script src="{% static 'tinyInject.js' %}"></script>
+
+
+{% include 'footer.html' %}
+{% endblock %}

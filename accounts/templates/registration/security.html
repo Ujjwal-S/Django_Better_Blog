@@ -1,0 +1,99 @@
+{% extends 'accounts_base.html' %}
+
+{% block content %}
+
+<div class="col-12 col-lg-8">
+  <div class="card border-gray-300 p-0 p-md-4 mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-0">Change Password</h3>
+      <form class="form mt-5" autocomplete="off" method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="inputPasswordOld">Current Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="inputPasswordOld"
+            required=""
+            name="{{form.old_password.name}}"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="inputPasswordNew">New Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="inputPasswordNew"
+            required=""
+            name="{{form.new_password1.name}}"
+          />
+          <span class="form-text small text-muted"
+            >The password must be 8-20 characters, and must <em>not</em> contain
+            spaces.</span
+          >
+        </div>
+        <div class="mb-4">
+          <label for="inputPasswordNewVerify">Verify</label>
+          <input
+            type="password"
+            class="form-control"
+            id="inputPasswordNewVerify"
+            required=""
+            name="{{form.new_password2.name}}"
+          />
+          <span class="form-text small text-muted"
+            >To confirm, type the new password again.</span
+          >
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-dark">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card card-body bg-white border-gray-300 p-0 p-md-4">
+    <div class="card-header bg-white border-0">
+      <div class="row d-block d-md-flex align-items-center">
+        <div class="col">
+          <h3 class="h5">Other Sessions</h3>
+          <p class="small">
+            This is a list of devices that have logged into your account (excluding this device).<br />Revoke
+            any sessions that you do not recognize.
+          </p>
+        </div>
+<!--         <div class="col-auto">
+          <a class="btn btn-sm btn-dark" href="#">Log out all</a>
+        </div> -->
+      </div>
+    </div>
+    <div class="card-body p-md-0">
+      <ul class="list-group list-group-flush">
+        
+        {% for session in sessions %}
+        <li class="list-group-item border-bottom rounded-0 py-4">
+          <div class="row d-block d-md-flex align-items-center">
+            <div class="col-auto">
+              <div class="icon icon-lg me-md-5 fw-50">
+                <span class="fas fa-{{ session.device_type }}"></span>
+              </div>
+            </div>
+            <div class="col ms-md-n5 my-4 my-md-0">
+              <h3 class="h6 mb-1">{{ session.device }}</h3>
+              <div class="small">{{ session.browser }}</div>
+              <span class="small"
+                ><span class="text-dark fw-bold">Last accessed: </span>{{ session.login_time }}</span
+              >
+            </div>
+            <div class="col-auto">
+              <a class="btn btn-xs btn-outline-gray" href="{% url 'logout-session' session.id %}">Log out</a>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
