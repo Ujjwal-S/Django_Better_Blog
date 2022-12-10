@@ -23,7 +23,7 @@ A blog app created using django CBVs.
 ## Usage
 
 ```
-git clone https://github.com/AshishPandagre/better-blog.git
+Clone the Repository
 cd better-blog
 pip install -r requirements.txt
 python manage.py migrate
