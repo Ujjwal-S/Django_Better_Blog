@@ -1,11 +1,5 @@
 # BetterBlog
 
-This project can be found live [here](https://betterblog.pythonanywhere.com/)
-
-Test Login details ([login](https://betterblog.pythonanywhere.com/accounts/login/)) <br/>
-email : damaca6483@shbiso.com <br/>
-password: admin123@
-
 A blog app created using django CBVs.
 
 ## Features (basic blog functionality +)
